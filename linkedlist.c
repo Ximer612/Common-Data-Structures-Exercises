@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MY_LIST(x) &(x.list_item)
 #define TO_MY_LIST(x) (struct my_list_item*)(x)
@@ -47,7 +48,7 @@ struct my_list_item* my_list_append(struct my_list_item** head, struct my_list_i
         (*head)->count=1;
     }
     else{
-        tail->next =item;
+        tail->next = item;
         (*head)->count++;
     }
     
@@ -176,7 +177,29 @@ void my_list_print(struct my_list_item* head)
     }
 }
 
+struct my_list_item* my_list_reverse(struct my_list_item** head)
+{
+    if(!(*head) || (*head)->count <2) return *head;
 
+    struct my_list_item* localHead = NULL;
+
+    const unsigned int count = (*head)->count;    
+
+    for (int i = 0; i < count; i++)
+    {
+        struct my_list_item* current_local_item = (*head);
+
+        for (int j = count-i-1; j > 0; j--)
+        {
+            current_local_item = current_local_item->next;
+        }
+
+        my_list_append(&localHead,current_local_item);
+    }
+
+    printf("#Reversed list!\n");
+    return localHead;
+}
 
 int main(int argc, char** argv){
 
@@ -211,4 +234,8 @@ int main(int argc, char** argv){
     my_int_remove_item((struct my_int_item**)&head,8);
 
     my_list_print(head);
+
+    struct my_int_item* reversed_list = (struct my_int_item*)my_list_reverse(&head);
+
+    my_list_print((struct my_list_item*)reversed_list);
 }
