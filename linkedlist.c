@@ -4,8 +4,13 @@
 #include <string.h>
 
 #define MY_LIST(x) &(x.list_item)
-#define TO_MY_LIST(x) (struct my_list_item*)(x)
-#define TO_INT_LIST(x) (struct my_int_item*)x
+#define TO_GENERIC_LIST(x) (struct my_list_item*)(x)
+#define TO_INT_LIST(x) (struct my_int_item*)(x)
+
+#define SET_BLUE_PRINT(x) printf("\033[0;34m")
+#define SET_GREEN_PRINT(x) printf("\033[0;32m")
+#define SET_RED_PRINT(x) printf("\033[0;31m")
+#define SET_DEFAULT_PRINT(x) printf("\033[0;00m")
 
 struct my_list_item
 {
@@ -101,7 +106,9 @@ struct my_list_item* my_list_remove_item(struct my_list_item** head, unsigned in
 
     if(index == 0) 
     {
-        printf("#Removed the head element \n");
+        SET_RED_PRINT();
+        printf("#Removed the head element");
+        SET_DEFAULT_PRINT();
         return my_list_pop(head);
     }
 
@@ -116,7 +123,9 @@ struct my_list_item* my_list_remove_item(struct my_list_item** head, unsigned in
             (*head)->count--;
             current_item->next=NULL;
 
+            SET_RED_PRINT();
             printf("#Removed the %d element\n",i);
+            SET_DEFAULT_PRINT();
             return current_item;
         }
 
@@ -124,7 +133,9 @@ struct my_list_item* my_list_remove_item(struct my_list_item** head, unsigned in
         current_item = current_item->next;
     } 
 
+    SET_RED_PRINT();
     printf("#Index not founded");
+    SET_DEFAULT_PRINT();
     return NULL;
 }
 
@@ -134,12 +145,14 @@ struct my_int_item* my_int_remove_item(struct my_int_item** head, unsigned int v
 
     if((*head)->value == value) 
     {
+        SET_RED_PRINT();
         printf("#Removed the head element \n");
-        struct my_int_item* popped_item = (struct my_int_item*)my_list_pop((struct my_list_item**)(head));
+        SET_DEFAULT_PRINT();
+        struct my_int_item* popped_item = TO_INT_LIST(my_list_pop((struct my_list_item**)(head)));
         return popped_item;
     }
 
-    struct my_int_item* current_item = (struct my_int_item*)(*head)->list_item.next;
+    struct my_int_item* current_item = TO_INT_LIST((*head))->list_item.next;
     struct my_int_item* previous_item = (*head);
 
     for (int i = 1; i < (*head)->list_item.count; i++)
@@ -150,15 +163,19 @@ struct my_int_item* my_int_remove_item(struct my_int_item** head, unsigned int v
             (*head)->list_item.count--;
             current_item->list_item.next=NULL;
 
+            SET_RED_PRINT();
             printf("#Removed the %d element with value %d\n",i,current_item->value);
+            SET_DEFAULT_PRINT();
             return current_item;
         }
 
         previous_item = current_item;
-        current_item = (struct my_int_item*)current_item->list_item.next;
+        current_item = TO_INT_LIST(current_item)->list_item.next;
     } 
 
+    SET_RED_PRINT();
     printf("#Value not founded in the list");
+    SET_DEFAULT_PRINT();
     return NULL;
 }
 
@@ -166,11 +183,13 @@ void my_list_print(struct my_list_item* head)
 {
     struct my_list_item* current_item = head;
 
+    SET_GREEN_PRINT();
     printf("#The list length is = %d\n",head->count);
+    SET_DEFAULT_PRINT();
 
     for (int i = 0; i < head->count; i++)
     {
-        printf("[%d] == %d \n",i,((struct my_int_item*)current_item)->value);  
+        printf("[%d] == %d \n",i,(TO_INT_LIST(current_item))->value);  
 
         if(!current_item->next) continue;
         current_item = current_item->next;
@@ -197,7 +216,9 @@ struct my_list_item* my_list_reverse(struct my_list_item** head)
         my_list_append(&localHead,current_local_item);
     }
 
-    printf("#Reversed list!\n");
+    SET_GREEN_PRINT();
+    printf("Reversed list!\n");
+    SET_DEFAULT_PRINT();
     return localHead;
 }
 
@@ -207,7 +228,7 @@ int main(int argc, char** argv){
 
     struct my_int_item first_int_item;
     first_int_item.value = 0;
-    my_list_append(&head,(struct my_list_item*)&first_int_item.list_item);
+    my_list_append(&head,TO_GENERIC_LIST(&first_int_item.list_item));
 
     struct my_int_item second_int_item;
     second_int_item.value = 2;
@@ -235,7 +256,7 @@ int main(int argc, char** argv){
 
     my_list_print(head);
 
-    struct my_int_item* reversed_list = (struct my_int_item*)my_list_reverse(&head);
+    struct my_int_item* reversed_list = TO_INT_LIST(my_list_reverse(&head));
 
-    my_list_print((struct my_list_item*)reversed_list);
+    my_list_print(TO_GENERIC_LIST(reversed_list));
 }
