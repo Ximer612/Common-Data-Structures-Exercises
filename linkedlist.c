@@ -78,7 +78,7 @@ struct list_item* list_pop(struct list_item** head)
     return current_head;
 }
 
-unsigned int list_length(struct list_item* head)
+unsigned int list_length(const struct list_item* head)
 {
     return head->count;
 }
@@ -196,17 +196,17 @@ void list_print(struct list_item* head)
     }
 }
 
-struct list_item* list_reverse(struct list_item** head)
+struct list_item* list_reverse(struct list_item* head)
 {
-    if(!(*head) || (*head)->count <2 ) return *head;
+    if(!head || head->count <2 ) return head;
 
     struct list_item* reversedList = NULL;
 
-    const unsigned int count = (*head)->count;    
+    const unsigned int count = head->count;    
 
     for (int i = 0; i < count; i++)
     {
-        struct list_item* current_local_item = (*head);
+        struct list_item* current_local_item = head;
 
         for (int j = count-i-1; j > 0; j--)
         {
@@ -252,12 +252,12 @@ int main(int argc, char** argv){
 
     list_print(head);
 
-    struct int_list_item* reversed_list = TO_INT_LIST(list_reverse(&head));
+    struct int_list_item* reversed_list = TO_INT_LIST(list_reverse(head));
 
     list_print(TO_GENERIC_LIST(reversed_list));
 
-    int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),12);
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),9);
+    int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),12);
     list_print(TO_GENERIC_LIST(reversed_list));
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),3);
     list_remove_item_at_index(TO_GENERIC_LIST_POINTER(&reversed_list),0);

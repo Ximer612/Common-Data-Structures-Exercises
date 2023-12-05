@@ -148,7 +148,7 @@ struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const
 
 void list_add_element_after_index(struct list_item** head, struct list_item* item, const unsigned int index)
 {
-    if(!(*head) || (*head)->count < index) 
+    if(!(*head) || (*head)->count < index || index < 0) 
     {
         SET_RED_PRINT();
         printf("#Cannot add element after the index %d\n",index);
@@ -197,16 +197,15 @@ void list_add_element_before_index(struct list_item** head, struct list_item* it
 
     if(index == 0)
     {
-        // head swap
+        struct list_item* last_head = *head;
+        item->count = (*head)->count+1;
+        *head = item;
+        item->next = last_head;
+        item->prev = NULL;
+        last_head->prev = *head;
 
-        struct list_item* tmp_item;
-        tmp_item = 
-
-        printf("value = %d\n",(TO_INT_LIST(tmp_item))->value);
-
-        item->count = (*head)->count++;
         SET_GREEN_PRINT();
-        printf("#Item added as new head\n");
+        printf("#Item added as new head %d \n", item->count);
         SET_DEFAULT_PRINT();
         return;
     }
@@ -240,6 +239,32 @@ void list_add_element_before_index(struct list_item** head, struct list_item* it
     return;
 }
 
+unsigned int find_index_by_int_value(const struct list_item* head, const unsigned int value)
+{
+    if(!head) return -1;
+
+
+    struct int_list_item* current_item = TO_INT_LIST(head);
+
+    for (int i = 0; i < head->count; i++)
+    {
+        if(current_item->value == value)
+        {
+            SET_GREEN_PRINT();
+            printf("#Founded element at index %d with value %d\n",i,current_item->value);
+            SET_DEFAULT_PRINT();
+            return i;
+        }
+
+        current_item = TO_INT_LIST(current_item)->list_item.next;
+    } 
+
+    SET_RED_PRINT();
+    printf("#Value %d not founded in the list\n",value);
+    SET_DEFAULT_PRINT();
+    return -1;
+}
+
 void list_print(struct list_item* head)
 {
     if(!head)
@@ -265,6 +290,22 @@ void list_print(struct list_item* head)
     }
 }
 
+struct list_item* shuffle_list(struct list_item* head)
+{
+    if(!(head) || (head)->count <2 ) return head;
+
+    struct list_item* reversedList = NULL;
+
+    const unsigned int count = head->count;   
+
+
+
+    SET_GREEN_PRINT();
+    printf("Shuffled list!\n");
+    SET_DEFAULT_PRINT();
+    return reversedList;
+}
+
 int main(int argc, char** argv)
 {
     struct list_item* head;
@@ -275,7 +316,7 @@ int main(int argc, char** argv)
 
     for (int i = 0; i < items_to_create; i++)
     {
-        items_to_add = (struct int_list_item*)malloc(sizeof(struct int_list_item));
+        items_to_add = TO_INT_LIST(malloc(sizeof(struct int_list_item)));
         to_free_memory[i] = (void*)items_to_add;
         (*items_to_add).value = 3 + i*3;
         list_append(&head,&(*items_to_add).list_item);
@@ -290,7 +331,6 @@ int main(int argc, char** argv)
     struct int_list_item new_item1;
     new_item1.value = 123;
 
-
     list_add_element_after_index(&head,TO_GENERIC_LIST(&new_item1),1);
 
     list_print(head);
@@ -298,7 +338,8 @@ int main(int argc, char** argv)
     struct int_list_item new_item2;
     new_item2.value = 456;
 
-    list_add_element_before_index(&head,TO_GENERIC_LIST(&new_item2),0);
+    const int new_item2_index =  find_index_by_int_value(head,new_item1.value);
+    list_add_element_before_index(&head,TO_GENERIC_LIST(&new_item2),new_item2_index);
 
     list_print(head);
 
