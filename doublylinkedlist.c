@@ -1,6 +1,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string.h>
 #include "console_utilities.h"
 #include "lists_utilities.h"
@@ -90,6 +91,7 @@ struct list_item* list_remove_by_index(struct list_item** head, const unsigned i
         return list_pop(head);
     }
 
+
     struct list_item* current_head = (*head)->next;
 
     for (int i = 1; i < (*head)->count; i++)
@@ -97,7 +99,8 @@ struct list_item* list_remove_by_index(struct list_item** head, const unsigned i
         if(i == index)
         {
             current_head->prev->next = current_head->next;
-            current_head->next->prev = current_head->prev;
+            if(current_head->next)
+                current_head->next->prev = current_head->prev;
             (*head)->count--;
             return current_head;
         }
@@ -124,7 +127,8 @@ struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const
         if(current_item->value == value)
         {
             current_item->list_item.prev->next = current_item->list_item.next;
-            current_item->list_item.next->prev = current_item->list_item.prev;
+            if(current_item->list_item.next)
+                current_item->list_item.next->prev = current_item->list_item.prev;
 
             (*head)->list_item.count--;
 
@@ -148,10 +152,19 @@ struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const
 
 void list_add_element_after_index(struct list_item** head, struct list_item* item, const unsigned int index)
 {
-    if(!(*head) || (*head)->count < index || index < 0) 
+    if(!(*head) || index < 0) 
     {
         SET_RED_PRINT();
         printf("#Cannot add element after the index %d\n",index);
+        SET_DEFAULT_PRINT();
+        return;
+    }
+
+    if(index > (*head)->count)
+    {
+        list_append(head,item);
+        SET_RED_PRINT();
+        printf("#Added at the bottom of the list , the index was %d but list was %d\n",index, (*head)->count);
         SET_DEFAULT_PRINT();
         return;
     }
@@ -294,31 +307,65 @@ struct list_item* shuffle_list(struct list_item* head)
 {
     if(!(head) || (head)->count <2 ) return head;
 
-    struct list_item* reversedList = NULL;
+    struct list_item* reversed_list = head;
 
-    const unsigned int count = head->count;   
+    const unsigned int count = head->count; 
+    
+    struct list_item* current_item = reversed_list;
 
+    struct list_item* random_item;
 
+    SET_BLUE_PRINT();
+    printf("#########################################################\n");
+    SET_DEFAULT_PRINT();
+
+    for (int i = 0; i < count; i++)
+    {
+        const unsigned int random_index = rand() % count;
+
+        printf("Swapping the element in %d with the element at %d\n",i,random_index);
+
+        random_item = list_remove_by_index(&reversed_list, i);
+        //printf("#Removed the %d element!\n",i);
+        //list_print(reversed_list);
+
+        list_add_element_after_index(&reversed_list,random_item,i-1);
+
+        random_item = list_remove_by_index(&reversed_list, (random_index-1)%count );
+        //printf("#Removed the %d element! %p\n",random_index-1, random_item);
+        //list_print(reversed_list);
+        
+        list_add_element_after_index(&reversed_list,random_item,random_index-1);
+        
+        //list_print(reversed_list);
+        //printf("Swapped! %d  -- %d\n\n",i,random_index);
+    }
+
+    SET_BLUE_PRINT();
+    printf("#########################################################\n");
+    SET_DEFAULT_PRINT();
 
     SET_GREEN_PRINT();
     printf("Shuffled list!\n");
     SET_DEFAULT_PRINT();
-    return reversedList;
+    return reversed_list;
 }
 
 int main(int argc, char** argv)
 {
+    srand(time(NULL));
+
     struct list_item* head;
     struct int_list_item* items_to_add;
 
-    void** to_free_memory[4];
-    const int items_to_create = 4;
+    void** to_free_memory[10];
+    const int items_to_create = 10;
 
     for (int i = 0; i < items_to_create; i++)
     {
         items_to_add = TO_INT_LIST(malloc(sizeof(struct int_list_item)));
         to_free_memory[i] = (void*)items_to_add;
-        (*items_to_add).value = 3 + i*3;
+        (*items_to_add).value = 1 + i*1;
         list_append(&head,&(*items_to_add).list_item);
     }
     
@@ -343,11 +390,14 @@ int main(int argc, char** argv)
 
     list_print(head);
 
+    struct list_item* shuffled_list = shuffle_list(head);
+    list_print(shuffled_list);
+
     SET_GREEN_PRINT();
 
     for (int i = 0; i < items_to_create; i++)
     {
-        printf("#Cleaning the address => %p\n",to_free_memory[i]);
+        //printf("#Cleaning the address => %p\n",to_free_memory[i]);
         free(to_free_memory[i]);
     }
 
