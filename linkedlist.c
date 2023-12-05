@@ -1,15 +1,9 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-
-#define GET_MY_LIST(x) &(x.list_item)
-#define TO_GENERIC_LIST(x) (struct list_item*)(x)
-#define TO_INT_LIST(x) (struct list_int_item*)(x)
-
-#define SET_BLUE_PRINT(x) printf("\033[0;34m")
-#define SET_GREEN_PRINT(x) printf("\033[0;32m")
-#define SET_RED_PRINT(x) printf("\033[0;31m")
-#define SET_DEFAULT_PRINT(x) printf("\033[0;00m")
+#include <string.h>
+#include "console_utilities.h"
+#include "lists_utilities.h"
 
 struct list_item
 {
@@ -17,7 +11,7 @@ struct list_item
     unsigned int count;   
 };
 
-struct list_int_item
+struct int_list_item
 {
     struct list_item list_item; //it's like his parent
     int value;    
@@ -76,6 +70,11 @@ struct list_item* list_pop(struct list_item** head)
     }
 
     current_head->next  = NULL;
+
+    SET_RED_PRINT();
+    printf("#Removed the head element\n");
+    SET_DEFAULT_PRINT();  
+
     return current_head;
 }
 
@@ -99,15 +98,12 @@ unsigned int list_length_slow(struct list_item* head)
     return counter;
 }
 
-struct list_item* list_remove_item_at_index(struct list_item** head, unsigned int index)
+struct list_item* list_remove_item_at_index(struct list_item** head,const unsigned int index)
 {
     if(!(*head) || index > (*head)->count) return NULL;
 
     if(index == 0) 
     {
-        SET_RED_PRINT();
-        printf("#Removed the head element");
-        SET_DEFAULT_PRINT();
         return list_pop(head);
     }
 
@@ -133,26 +129,23 @@ struct list_item* list_remove_item_at_index(struct list_item** head, unsigned in
     } 
 
     SET_RED_PRINT();
-    printf("#Index not founded");
+    printf("#Index not founded\n");
     SET_DEFAULT_PRINT();
     return NULL;
 }
 
-struct list_int_item* int_remove_item_at_value(struct list_int_item** head, unsigned int value)
+struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const unsigned int value)
 {
     if(!(*head)) return NULL;
 
     if((*head)->value == value) 
     {
-        SET_RED_PRINT();
-        printf("#Removed the head element \n");
-        SET_DEFAULT_PRINT();
-        struct list_int_item* popped_item = TO_INT_LIST(list_pop((struct list_item**)(head)));
+        struct int_list_item* popped_item = TO_INT_LIST(list_pop((struct list_item**)(head)));
         return popped_item;
     }
 
-    struct list_int_item* current_item = TO_INT_LIST((*head))->list_item.next;
-    struct list_int_item* previous_item = (*head);
+    struct int_list_item* current_item = TO_INT_LIST((*head))->list_item.next;
+    struct int_list_item* previous_item = (*head);
 
     for (int i = 1; i < (*head)->list_item.count; i++)
     {
@@ -173,13 +166,21 @@ struct list_int_item* int_remove_item_at_value(struct list_int_item** head, unsi
     } 
 
     SET_RED_PRINT();
-    printf("#Value not founded in the list");
+    printf("#Value %d not founded in the list\n",value);
     SET_DEFAULT_PRINT();
     return NULL;
 }
 
 void list_print(struct list_item* head)
 {
+    if(!head)
+    {
+        SET_RED_PRINT();
+        printf("#The list is empty!\n");
+        SET_DEFAULT_PRINT();
+        return;
+    }
+
     struct list_item* current_item = head;
 
     SET_GREEN_PRINT();
@@ -197,9 +198,9 @@ void list_print(struct list_item* head)
 
 struct list_item* list_reverse(struct list_item** head)
 {
-    if(!(*head) || (*head)->count <2) return *head;
+    if(!(*head) || (*head)->count <2 ) return *head;
 
-    struct list_item* localHead = NULL;
+    struct list_item* reversedList = NULL;
 
     const unsigned int count = (*head)->count;    
 
@@ -212,38 +213,34 @@ struct list_item* list_reverse(struct list_item** head)
             current_local_item = current_local_item->next;
         }
 
-        list_append(&localHead,current_local_item);
+        list_append(&reversedList,current_local_item);
     }
 
     SET_GREEN_PRINT();
     printf("Reversed list!\n");
     SET_DEFAULT_PRINT();
-    return localHead;
+    return reversedList;
 }
 
 int main(int argc, char** argv){
 
     struct list_item* head = NULL; // it's a pointer not a my_list_item
 
-    struct list_int_item first_int_item;
-    first_int_item.value = 0;
-    list_append(&head,TO_GENERIC_LIST(&first_int_item.list_item));
+    struct int_list_item* items_to_add;
+    void** to_free_memory[5];
+    const int items_to_create = 4;
 
-    struct list_int_item second_int_item;
-    second_int_item.value = 2;
-    list_append(&head,GET_MY_LIST(second_int_item));
+    for (int i = 0; i < items_to_create; i++)
+    {
+        items_to_add = TO_INT_LIST( malloc(sizeof(struct int_list_item)) );
+        to_free_memory[i] = (void*)items_to_add;
+        (*items_to_add).value = 3 + i*3;
+        list_append(&head,&(*items_to_add).list_item);
+    }
 
-    struct list_int_item third_int_item;
-    third_int_item.value = 4;
-    list_append(&head,GET_MY_LIST(third_int_item));
-
-    struct list_int_item fourth_int_item;
-    fourth_int_item.value = 8;
-    list_append(&head,GET_MY_LIST(fourth_int_item));
-
-    struct list_int_item fifth_int_item;
-    fifth_int_item.value = 16;
-    list_append(&head,GET_MY_LIST(fifth_int_item));
+    struct int_list_item new_item;
+    new_item.value = 999;
+    list_append(&head,&new_item.list_item);
 
     list_print(head);
 
@@ -251,11 +248,29 @@ int main(int argc, char** argv){
 
     list_print(head);
 
-    int_remove_item_at_value((struct list_int_item**)&head,8);
+    int_remove_item_at_value(TO_INT_LIST_POINTER(&head),8);
 
     list_print(head);
 
-    struct list_int_item* reversed_list = TO_INT_LIST(list_reverse(&head));
+    struct int_list_item* reversed_list = TO_INT_LIST(list_reverse(&head));
 
     list_print(TO_GENERIC_LIST(reversed_list));
+
+    int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),12);
+    int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),9);
+    list_print(TO_GENERIC_LIST(reversed_list));
+    int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),3);
+    list_remove_item_at_index(TO_GENERIC_LIST_POINTER(&reversed_list),0);
+    list_print(TO_GENERIC_LIST(reversed_list));
+
+    SET_GREEN_PRINT();
+
+    for (int i = 0; i < items_to_create; i++)
+    {
+        printf("#Cleaning the address => %p\n",to_free_memory[i]);
+        free(to_free_memory[i]);
+    }
+
+    printf("#Memory clean!\n");
+    SET_DEFAULT_PRINT();
 }

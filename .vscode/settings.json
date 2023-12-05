@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "utilities.h": "c",
+        "console_utilities.h": "c",
+        "xmemory": "c",
+        "xutility": "c",
+        "type_traits": "c",
+        "xtr1common": "c"
     }
 }
