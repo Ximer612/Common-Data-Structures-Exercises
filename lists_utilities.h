@@ -1,5 +1,0 @@
-#define GET_MY_LIST(x) &(x.list_item)
-#define TO_GENERIC_LIST(x) (struct list_item*)(x)
-#define TO_GENERIC_LIST_POINTER(x) (struct list_item**)(x)
-#define TO_INT_LIST(x) (struct int_list_item*)(x)
-#define TO_INT_LIST_POINTER(x) (struct int_list_item**)(x)

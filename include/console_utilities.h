@@ -1,0 +1,7 @@
+#define SET_BLUE_PRINT() printf("\033[0;34m")
+#define SET_GREEN_PRINT() printf("\033[0;32m")
+#define SET_RED_PRINT() printf("\033[0;31m")
+#define SET_DEFAULT_PRINT() printf("\033[0;00m")
+#define RED_PRINTF(string) printf("\033[0;31m %s \033[0;00m \n",string)
+#define GREEN_PRINTF(string) printf("\033[0;32m %s \033[0;00m \n",string)
+#define BLUE_PRINTF(string) printf("\033[0;34m %s \033[0;00m \n",string)

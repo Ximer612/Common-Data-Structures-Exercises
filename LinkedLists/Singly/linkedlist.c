@@ -2,30 +2,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "console_utilities.h"
-#include "lists_utilities.h"
-
-struct list_item
-{
-    struct list_item* next; 
-    unsigned int count;   
-};
+#include <console_utilities.h>
+#include <linked_lists.h>
 
 struct int_list_item
 {
-    struct list_item list_item; //it's like his parent
+    struct singly_list_item list_item; //it's like his parent
     int value;    
 };
 
-struct list_item* list_get_tail(struct list_item* head)
+struct singly_list_item* list_get_tail(struct singly_list_item* head)
 {
     if(!head)
     {
         return NULL;
     }
 
-    struct list_item* current_item = head;
-    struct list_item* last_item = NULL;
+    struct singly_list_item* current_item = head;
+    struct singly_list_item* last_item = NULL;
     
     while(current_item)
     {
@@ -36,9 +30,9 @@ struct list_item* list_get_tail(struct list_item* head)
     return last_item;
 }
 
-struct list_item* list_append(struct list_item** head, struct list_item* item)
+struct singly_list_item* list_append(struct singly_list_item** head, struct singly_list_item* item)
 {
-    struct list_item* tail = list_get_tail(*head);
+    struct singly_list_item* tail = list_get_tail(*head);
 
     if(!(tail))
     {
@@ -54,14 +48,14 @@ struct list_item* list_append(struct list_item** head, struct list_item* item)
     return item;
 }
 
-struct list_item* list_pop(struct list_item** head)
+struct singly_list_item* list_pop(struct singly_list_item** head)
 {
     if(!(*head))
     {
         return NULL;
     }
 
-    struct list_item* current_head = *head;
+    struct singly_list_item* current_head = *head;
     const unsigned int current_count = (*head)->count;
     *head = (*head)->next;
     if(*head)
@@ -78,16 +72,16 @@ struct list_item* list_pop(struct list_item** head)
     return current_head;
 }
 
-unsigned int list_length(const struct list_item* head)
+unsigned int list_length(const struct singly_list_item* head)
 {
     return head->count;
 }
 
-unsigned int list_length_slow(struct list_item* head)
+unsigned int list_length_slow(struct singly_list_item* head)
 {
     unsigned int counter = 0;
 
-    struct list_item* current_item = head;
+    struct singly_list_item* current_item = head;
 
     while(current_item) // WHILE IS NOT NULL
     {
@@ -98,17 +92,22 @@ unsigned int list_length_slow(struct list_item* head)
     return counter;
 }
 
-struct list_item* list_remove_item_at_index(struct list_item** head,const unsigned int index)
+struct singly_list_item* list_remove_item_at_index(struct singly_list_item** head,const unsigned int index)
 {
-    if(!(*head) || index > (*head)->count) return NULL;
+    if(!(*head) || index > (*head)->count) 
+    {           
+        SET_RED_PRINT();
+        printf("#Can't remove the item at index %d \n",index);
+        SET_DEFAULT_PRINT(); return NULL;
+    }
 
     if(index == 0) 
     {
         return list_pop(head);
     }
 
-    struct list_item* current_item = (*head)->next;
-    struct list_item* previous_item = (*head);
+    struct singly_list_item* current_item = (*head)->next;
+    struct singly_list_item* previous_item = (*head);
 
     for (int i = 1; i < (*head)->count; i++)
     {
@@ -140,7 +139,7 @@ struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const
 
     if((*head)->value == value) 
     {
-        struct int_list_item* popped_item = TO_INT_LIST(list_pop((struct list_item**)(head)));
+        struct int_list_item* popped_item = TO_INT_LIST(list_pop((struct singly_list_item**)(head)));
         return popped_item;
     }
 
@@ -171,7 +170,7 @@ struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const
     return NULL;
 }
 
-void list_print(struct list_item* head)
+void list_print(struct singly_list_item* head)
 {
     if(!head)
     {
@@ -181,7 +180,7 @@ void list_print(struct list_item* head)
         return;
     }
 
-    struct list_item* current_item = head;
+    struct singly_list_item* current_item = head;
 
     SET_GREEN_PRINT();
     printf("#The list length is = %d\n",head->count);
@@ -196,17 +195,17 @@ void list_print(struct list_item* head)
     }
 }
 
-struct list_item* list_reverse(struct list_item* head)
+struct singly_list_item* list_reverse(struct singly_list_item* head)
 {
     if(!head || head->count <2 ) return head;
 
-    struct list_item* reversedList = NULL;
+    struct singly_list_item* reversedList = NULL;
 
     const unsigned int count = head->count;    
 
     for (int i = 0; i < count; i++)
     {
-        struct list_item* current_local_item = head;
+        struct singly_list_item* current_local_item = head;
 
         for (int j = count-i-1; j > 0; j--)
         {
@@ -224,11 +223,11 @@ struct list_item* list_reverse(struct list_item* head)
 
 int main(int argc, char** argv){
 
-    struct list_item* head = NULL; // it's a pointer not a my_list_item
+    struct singly_list_item* head = NULL; // it's a pointer not a my_list_item
 
     struct int_list_item* items_to_add;
     void** to_free_memory[5];
-    const int items_to_create = 4;
+    const int items_to_create = 5;
 
     for (int i = 0; i < items_to_create; i++)
     {
@@ -244,7 +243,7 @@ int main(int argc, char** argv){
 
     list_print(head);
 
-    list_remove_item_at_index(&head,1);
+    list_remove_item_at_index(&head,2);
 
     list_print(head);
 
@@ -254,14 +253,14 @@ int main(int argc, char** argv){
 
     struct int_list_item* reversed_list = TO_INT_LIST(list_reverse(head));
 
-    list_print(TO_GENERIC_LIST(reversed_list));
+    list_print(TO_GENERIC_SINGLY_LIST(reversed_list));
 
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),9);
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),12);
-    list_print(TO_GENERIC_LIST(reversed_list));
+    list_print(TO_GENERIC_SINGLY_LIST(reversed_list));
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),3);
-    list_remove_item_at_index(TO_GENERIC_LIST_POINTER(&reversed_list),0);
-    list_print(TO_GENERIC_LIST(reversed_list));
+    list_remove_item_at_index(TO_GENERIC_SINGLY_LIST_POINTER(&reversed_list),0);
+    list_print(TO_GENERIC_SINGLY_LIST(reversed_list));
 
     SET_GREEN_PRINT();
 

@@ -3,31 +3,24 @@
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
-#include "console_utilities.h"
-#include "lists_utilities.h"
-
-struct list_item
-{
-    struct list_item *prev;
-    struct list_item *next;
-    unsigned int count;
-};
+#include <console_utilities.h>
+#include <linked_lists.h>
 
 struct int_list_item
 {
-    struct list_item list_item;
+    struct doubly_list_item list_item;
     int value;
 };
 
-struct list_item* list_get_tail(struct list_item* head)
+struct doubly_list_item* list_get_tail(struct doubly_list_item* head)
 {
     if(!head)
     {
         return NULL;
     }
 
-    struct list_item* current_item = head;
-    struct list_item* last_item = NULL;
+    struct doubly_list_item* current_item = head;
+    struct doubly_list_item* last_item = NULL;
     
     while(current_item)
     {
@@ -38,9 +31,9 @@ struct list_item* list_get_tail(struct list_item* head)
     return last_item;
 }
 
-struct list_item* list_append(struct list_item** head, struct list_item* item)
+struct doubly_list_item* list_append(struct doubly_list_item** head, struct doubly_list_item* item)
 {
-    struct list_item* tail = list_get_tail(*head);
+    struct doubly_list_item* tail = list_get_tail(*head);
 
     if(!(tail))
     {
@@ -57,14 +50,14 @@ struct list_item* list_append(struct list_item** head, struct list_item* item)
     return item;
 }
 
-struct list_item* list_pop(struct list_item** head)
+struct doubly_list_item* list_pop(struct doubly_list_item** head)
 {
     if(!(*head))
     {
         return NULL;
     }
 
-    struct list_item* current_head = *head;
+    struct doubly_list_item* current_head = *head;
     const unsigned int current_count = (*head)->count;
     *head = (*head)->next;
     if(*head)
@@ -82,7 +75,7 @@ struct list_item* list_pop(struct list_item** head)
     return current_head;
 }
 
-struct list_item* list_remove_by_index(struct list_item** head, const unsigned int index)
+struct doubly_list_item* list_remove_by_index(struct doubly_list_item** head, const unsigned int index)
 {
     if(!(*head) || (*head)->count < index) return NULL;
 
@@ -92,7 +85,7 @@ struct list_item* list_remove_by_index(struct list_item** head, const unsigned i
     }
 
 
-    struct list_item* current_head = (*head)->next;
+    struct doubly_list_item* current_head = (*head)->next;
 
     for (int i = 1; i < (*head)->count; i++)
     {
@@ -117,7 +110,7 @@ struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const
 
     if((*head)->value == value) 
     {
-        return TO_INT_LIST(list_pop((struct list_item**)(head)));
+        return TO_INT_LIST(list_pop((struct doubly_list_item**)(head)));
     }
 
     struct int_list_item* current_item = TO_INT_LIST((*head))->list_item.next;
@@ -150,7 +143,7 @@ struct int_list_item* int_remove_item_at_value(struct int_list_item** head,const
     return NULL;
 }
 
-void list_add_element_after_index(struct list_item** head, struct list_item* item, const unsigned int index)
+void list_add_element_after_index(struct doubly_list_item** head, struct doubly_list_item* item, const unsigned int index)
 {
     if(!(*head) || index < 0) 
     {
@@ -169,7 +162,7 @@ void list_add_element_after_index(struct list_item** head, struct list_item* ite
         return;
     }
 
-    struct list_item* current_head = *head;
+    struct doubly_list_item* current_head = *head;
 
     for (int i = 0; i < (*head)->count; i++)
     {
@@ -198,7 +191,7 @@ void list_add_element_after_index(struct list_item** head, struct list_item* ite
     return;
 }
 
-void list_add_element_before_index(struct list_item** head, struct list_item* item, const unsigned int index)
+void list_add_element_before_index(struct doubly_list_item** head, struct doubly_list_item* item, const unsigned int index)
 {
     if(!(*head) || (*head)->count < index) 
     {
@@ -210,7 +203,7 @@ void list_add_element_before_index(struct list_item** head, struct list_item* it
 
     if(index == 0)
     {
-        struct list_item* last_head = *head;
+        struct doubly_list_item* last_head = *head;
         item->count = (*head)->count+1;
         *head = item;
         item->next = last_head;
@@ -223,7 +216,7 @@ void list_add_element_before_index(struct list_item** head, struct list_item* it
         return;
     }
 
-    struct list_item* current_head = (*head)->next;
+    struct doubly_list_item* current_head = (*head)->next;
 
     for (int i = 1; i < (*head)->count; i++)
     {
@@ -252,7 +245,7 @@ void list_add_element_before_index(struct list_item** head, struct list_item* it
     return;
 }
 
-unsigned int find_index_by_int_value(const struct list_item* head, const unsigned int value)
+unsigned int find_index_by_int_value(const struct doubly_list_item* head, const unsigned int value)
 {
     if(!head) return -1;
 
@@ -278,7 +271,7 @@ unsigned int find_index_by_int_value(const struct list_item* head, const unsigne
     return -1;
 }
 
-void list_print(struct list_item* head)
+void list_print(struct doubly_list_item* head)
 {
     if(!head)
     {
@@ -288,7 +281,7 @@ void list_print(struct list_item* head)
         return;
     }
 
-    struct list_item* current_item = head;
+    struct doubly_list_item* current_item = head;
 
     SET_GREEN_PRINT();
     printf("#The list length is = %d\n",head->count);
@@ -303,17 +296,17 @@ void list_print(struct list_item* head)
     }
 }
 
-struct list_item* shuffle_list(struct list_item* head)
+struct doubly_list_item* shuffle_list(struct doubly_list_item* head)
 {
     if(!(head) || (head)->count <2 ) return head;
 
-    struct list_item* reversed_list = head;
+    struct doubly_list_item* reversed_list = head;
 
     const unsigned int count = head->count; 
     
-    struct list_item* current_item = reversed_list;
+    struct doubly_list_item* current_item = reversed_list;
 
-    struct list_item* random_item;
+    struct doubly_list_item* random_item;
 
     SET_BLUE_PRINT();
     printf("#########################################################\n");
@@ -321,6 +314,7 @@ struct list_item* shuffle_list(struct list_item* head)
 
     for (int i = 0; i < count; i++)
     {
+        //to improve random shuffle
         const unsigned int random_index = rand() % count;
 
         printf("Swapping the element in %d with the element at %d\n",i,random_index);
@@ -355,7 +349,7 @@ int main(int argc, char** argv)
 {
     srand(time(NULL));
 
-    struct list_item* head;
+    struct doubly_list_item* head;
     struct int_list_item* items_to_add;
 
     void** to_free_memory[10];
@@ -378,7 +372,7 @@ int main(int argc, char** argv)
     struct int_list_item new_item1;
     new_item1.value = 123;
 
-    list_add_element_after_index(&head,TO_GENERIC_LIST(&new_item1),1);
+    list_add_element_after_index(&head,TO_GENERIC_DOUBLY_LIST(&new_item1),1);
 
     list_print(head);
 
@@ -386,18 +380,18 @@ int main(int argc, char** argv)
     new_item2.value = 456;
 
     const int new_item2_index =  find_index_by_int_value(head,new_item1.value);
-    list_add_element_before_index(&head,TO_GENERIC_LIST(&new_item2),new_item2_index);
+    list_add_element_before_index(&head,TO_GENERIC_DOUBLY_LIST(&new_item2),new_item2_index);
 
     list_print(head);
 
-    struct list_item* shuffled_list = shuffle_list(head);
+    struct doubly_list_item* shuffled_list = shuffle_list(head);
     list_print(shuffled_list);
 
     SET_GREEN_PRINT();
 
     for (int i = 0; i < items_to_create; i++)
     {
-        //printf("#Cleaning the address => %p\n",to_free_memory[i]);
+        printf("#Cleaning the address => %p\n",to_free_memory[i]);
         free(to_free_memory[i]);
     }
 
