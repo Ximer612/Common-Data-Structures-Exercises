@@ -5,6 +5,12 @@
 #include <console_utilities.h>
 #include <linked_lists.h>
 
+struct singly_list_item
+{
+    struct singly_list_item* next; 
+    unsigned int count;   
+};
+
 struct int_list_item
 {
     struct singly_list_item list_item; //it's like his parent

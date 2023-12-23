@@ -6,6 +6,13 @@
 #include <console_utilities.h>
 #include <linked_lists.h>
 
+struct doubly_list_item
+{
+    struct doubly_list_item *prev;
+    struct doubly_list_item *next;
+    unsigned int count;
+};
+
 struct int_list_item
 {
     struct doubly_list_item list_item;
