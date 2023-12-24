@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#define DEBUG_PRINT
 #include <console_utilities.h>
 #include <linked_lists.h>
 
@@ -82,6 +83,35 @@ set_table* create_new_set_table(const size_t hashmap_size, const size_t hashmap_
     return table;
 }
 
+set_list_item* set_find(set_table* set_table, const char* key)
+{
+    const size_t key_len = strlen(key);
+    const size_t hash = djb33x_hash(key, key_len);
+    const size_t index = hash % (set_table)->hashmap_size;
+
+
+    set_list_item* compare_node = set_table->items[index];
+
+    for (size_t i = 0; i < (set_table)->hashmap_singly_max_length; i++)
+    {
+        if (set_table->items[index]->key_len > 0)
+        {
+            if (compare_node->key_len == key_len && !memcmp(compare_node->key, key, key_len))
+            {
+                GREEN_PRINT("FOUND [%s] at index %llu slot %llu", key, index, i+1);
+                return compare_node;
+            }
+
+            if(compare_node->list_item.next)
+                compare_node = ((set_list_item*)compare_node->list_item.next);
+            else break;
+        }
+    }
+
+    RED_PRINT("THE KEY [%s] WAS NOT FOUNDED IN THIS SET", key);
+    return NULL;
+}
+
 int set_insert(set_table** set_table, const char* key)
 {
     const size_t key_len = strlen(key);
@@ -110,9 +140,7 @@ int set_insert(set_table** set_table, const char* key)
         (*set_table)->items[index]->list_item.next = NULL;
         (*set_table)->items[index]->list_item.count = 1;
 
-        SET_GREEN_PRINT();
-        printf("[%s] ADDED ELEMENT AT THE INDEX %llu! \n",key, index);
-        SET_DEFAULT_PRINT();
+        GREEN_PRINT("[%s] ADDED ELEMENT AT THE INDEX %llu!",key, index);
         return 0;
     }
 
@@ -120,7 +148,13 @@ int set_insert(set_table** set_table, const char* key)
     {
         RED_PRINT("MAX ELEMENT FOR THIS INDEX ALREADY ADDED!");
         return -1;
-    }        
+    }
+
+    if(set_find(*set_table,key))
+    {
+        RED_PRINT("THE ELEMENT [%s] WAS ALREADY IN THE SET AND WAS NOT ADDED AGAIN!",key);
+        return -1; 
+    }
     
     // if has a tail
     set_list_item* new_item = malloc(sizeof(set_list_item));
@@ -138,39 +172,8 @@ int set_insert(set_table** set_table, const char* key)
     tail->next = &(new_item->list_item);
     (*set_table)->items[index]->list_item.count++;
 
-    SET_GREEN_PRINT();
-    printf("[%s] ADDED ELEMENT AS %d AT THE INDEX %llu AFTER THE [%s]! \n",key, (*set_table)->items[index]->list_item.count , index, ((set_list_item*)tail)->key);
-    SET_DEFAULT_PRINT();
+    GREEN_PRINT("[%s] ADDED ELEMENT AS %d AT THE INDEX %llu AFTER THE [%s]!",key, (*set_table)->items[index]->list_item.count , index, ((set_list_item*)tail)->key);
     return 0;
-}
-
-void set_find(set_table* set_table, const char* key)
-{
-    const size_t key_len = strlen(key);
-    const size_t hash = djb33x_hash(key, key_len);
-    const size_t index = hash % (set_table)->hashmap_size;
-
-    set_list_item* compare_node = set_table->items[index];
-
-    for (size_t i = 0; i < (set_table)->hashmap_singly_max_length; i++)
-    {
-        if (set_table->items[index]->key_len > 0)
-        {
-            if (compare_node->key_len == key_len && !memcmp(compare_node->key, key, key_len))
-            {
-                SET_GREEN_PRINT();
-                printf("FOUND [%s] at index %llu slot %llu\n", key, index, i+1);
-                SET_DEFAULT_PRINT();
-                return;
-            }
-
-            compare_node = ((set_list_item*)compare_node->list_item.next);
-        }
-    }
-
-    SET_RED_PRINT();
-    printf("THE KEY [%s] WAS NOT FOUNDED IN THIS SET\n", key);
-    SET_DEFAULT_PRINT();
 }
 
 void set_print(const set_table* set_table)
@@ -196,6 +199,38 @@ void set_print(const set_table* set_table)
     }    
 }
 
+set_list_item* set_remove(set_table** set_table)
+{
+
+
+    return NULL;
+}
+
+// void set_free(set_table* set_table)
+// {
+//     set_list_item** print_node;
+
+//     for (int i = 0; i < set_table->hashmap_size; i++)
+//     {
+//         print_node = set_table->items[i];
+
+//         if(!print_node) continue;
+
+//         for (int j = 0; j < set_table->hashmap_singly_max_length; j++)
+//         {
+//             printf("FREE index %d slot %d [%s], length = %llu \n",i,j+1, (*print_node)->key, (*print_node)->key_len);
+
+//             free(print_node);
+
+//             if((*print_node)->list_item.next)
+//             {
+//                 print_node = (set_list_item*)(*print_node)->list_item.next;
+//             }
+//             else break;
+//         }        
+//     } 
+// }
+
 int main(int argc, char** argv)
 {
     set_table* my_set_table = create_new_set_table(64, 4);
@@ -206,10 +241,15 @@ int main(int argc, char** argv)
     set_insert(&my_set_table, "Halla");
     set_insert(&my_set_table, "Hilli");
     set_insert(&my_set_table, "Holla");
+    set_insert(&my_set_table, "Hello");
 
     set_print(my_set_table);
     
-    set_find(my_set_table, "Holle");
+    set_list_item* founded_element = set_find(my_set_table, "Holle");
+
+    //printf("%s", ((set_list_item*)my_set_table->items[7]->list_item.next)->key);
+
+    //set_free(&my_set_table);
 
     return 0;
 }
