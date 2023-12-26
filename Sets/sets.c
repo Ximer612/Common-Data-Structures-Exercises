@@ -263,13 +263,15 @@ int main(int argc, char** argv)
     set_print(animals_set);
     
     set_remove(animals_set,"Human");
-    set_remove(animals_set,"Bee");
+    set_list_item* bee = set_remove(animals_set,"Bee");
     
     set_list_item* founded_element = set_find(animals_set, "Bee", NULL);
 
     set_print(animals_set);
-
+    
     set_free(&animals_set);
+    free(bee);
+    GREEN_PRINT("#Cleaning the address of [%s] => %p", bee->key, bee);
 
     return 0;
 }

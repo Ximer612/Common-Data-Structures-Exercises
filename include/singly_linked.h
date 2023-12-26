@@ -23,5 +23,5 @@ unsigned int list_length(const singly_list_item* head);
 unsigned int list_length_slow(singly_list_item* head);
 singly_list_item* list_remove_item_at_index(singly_list_item** head,const unsigned int index);
 int_singly_list_item* int_remove_item_at_value(int_singly_list_item** head,const unsigned int value);
-void list_print(singly_list_item* head);
+void int_list_print(int_singly_list_item* head);
 singly_list_item* list_reverse(singly_list_item* head);

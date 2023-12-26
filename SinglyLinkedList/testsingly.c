@@ -26,26 +26,26 @@ int main(int argc, char** argv){
     new_item.value = 999;
     list_append(&head,&new_item.list_item);
 
-    list_print(head);
+    int_list_print((int_singly_list_item*)head);
 
     list_remove_item_at_index(&head,2);
 
-    list_print(head);
+    int_list_print((int_singly_list_item*)head);
 
     int_remove_item_at_value(TO_INT_LIST_POINTER(&head),8);
 
-    list_print(head);
+    int_list_print((int_singly_list_item*)head);
 
     int_singly_list_item* reversed_list = TO_INT_LIST(list_reverse(head));
 
-    list_print(TO_GENERIC_SINGLY_LIST(reversed_list));
+    int_list_print(reversed_list);
 
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),9);
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),12);
-    list_print(TO_GENERIC_SINGLY_LIST(reversed_list));
+    int_list_print(reversed_list);
     int_remove_item_at_value(TO_INT_LIST_POINTER(&reversed_list),3);
     list_remove_item_at_index(TO_GENERIC_SINGLY_LIST_POINTER(&reversed_list),0);
-    list_print(TO_GENERIC_SINGLY_LIST(reversed_list));
+    int_list_print(reversed_list);
 
     SET_GREEN_PRINT();
     for (int i = 0; i < items_to_create; i++)

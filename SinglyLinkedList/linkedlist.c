@@ -171,7 +171,7 @@ void int_list_print(int_singly_list_item* head)
         WHITE_PRINT("[%d] == %d",i,current_item->value);  
 
         if(!current_item->list_item.next) continue;
-        current_item = (int_singly_list_item*)current_item->list_item.next;
+        current_item = TO_INT_LIST(current_item->list_item.next);
     }
 }
 
