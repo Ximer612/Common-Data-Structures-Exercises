@@ -4,23 +4,7 @@
 #include <stdio.h>
 #define DEBUG_PRINT
 #include <console_utilities.h>
-#include <singly_linked.h>
-
-#define GET_SET_ITEMS_COUNT(set_table,index) ((set_table->nodes[index])->list_item.count)
-
-typedef struct 
-{
-    singly_list_item list_item;
-    const char *key;
-    size_t key_len;
-}set_list_item;  
-
-typedef struct
-{
-    set_list_item **items; //array of pointers of items
-    size_t hashmap_size;
-    size_t hashmap_singly_max_length;
-} set_table;
+#include <sets.h>
 
 size_t djb33x_hash(const char* key, const size_t keylen)
 {
@@ -98,7 +82,7 @@ int set_insert(set_table* set_table, const char* key)
 
     set_list_item* head = set_table->items[index];
 
-    struct singly_list_item* tail = list_get_tail(&head->list_item);
+    singly_list_item* tail = list_get_tail(&head->list_item);
 
     //if no tail = no head
     if(!tail) {
@@ -120,7 +104,7 @@ int set_insert(set_table* set_table, const char* key)
         return 0;
     }
 
-    if(set_table->items[index]->list_item.count >= set_table->hashmap_singly_max_length)
+    if(GET_SET_ITEMS_COUNT(set_table,index) >= set_table->hashmap_singly_max_length)
     {
         RED_PRINT("CANNOT ADD [%s] MAX SLOTS ITEMS FOR THIS INDEX ALREADY REACHED!", key);
         return -1;
@@ -148,7 +132,7 @@ int set_insert(set_table* set_table, const char* key)
     tail->next = &(new_item->list_item);
     set_table->items[index]->list_item.count++;
 
-    GREEN_PRINT("ADDED [%s] IN THE %d SLOT AT THE INDEX %llu AFTER THE [%s]!",key, set_table->items[index]->list_item.count , index, ((set_list_item*)tail)->key);
+    GREEN_PRINT("ADDED [%s] IN THE %d SLOT AT THE INDEX %llu AFTER THE [%s]!",key, GET_SET_ITEMS_COUNT(set_table,index) , index, ((set_list_item*)tail)->key);
     return 0;
 }
 
@@ -245,33 +229,4 @@ void set_free(set_table** set_table)
             else break;
         }        
     }
-}
-
-int main(int argc, char** argv)
-{
-    set_table* animals_set = create_new_set_table(2, 4);
-
-    set_insert(animals_set, "Cow");
-    set_insert(animals_set, "Dog");
-    set_insert(animals_set, "Cat");
-    set_insert(animals_set, "Ant");
-    set_insert(animals_set, "Bee");
-    set_insert(animals_set, "Bear");
-    set_insert(animals_set, "Pig");
-    set_insert(animals_set, "Cow");
-
-    set_print(animals_set);
-    
-    set_remove(animals_set,"Human");
-    set_list_item* bee = set_remove(animals_set,"Bee");
-    
-    set_list_item* founded_element = set_find(animals_set, "Bee", NULL);
-
-    set_print(animals_set);
-    
-    set_free(&animals_set);
-    free(bee);
-    GREEN_PRINT("#Cleaning the address of [%s] => %p", bee->key, bee);
-
-    return 0;
 }

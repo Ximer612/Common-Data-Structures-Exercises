@@ -12,6 +12,7 @@
         "lists_utilities.h": "c",
         "string.h": "c",
         "linked_lists.h": "c",
-        "singly_linked.h": "c"
+        "singly_linked.h": "c",
+        "stddef.h": "c"
     }
 }
