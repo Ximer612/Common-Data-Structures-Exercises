@@ -4,19 +4,13 @@
 #include <stdio.h>
 #define DEBUG_PRINT
 #include <console_utilities.h>
-#include <linked_lists.h>
+#include <singly_linked.h>
 
 #define GET_SET_ITEMS_COUNT(set_table,index) ((set_table->nodes[index])->list_item.count)
 
-struct singly_list_item
-{
-    struct singly_list_item* next; 
-    unsigned int count;   
-};
-
 typedef struct 
 {
-    struct singly_list_item list_item;
+    singly_list_item list_item;
     const char *key;
     size_t key_len;
 }set_list_item;  
@@ -27,90 +21,6 @@ typedef struct
     size_t hashmap_size;
     size_t hashmap_singly_max_length;
 } set_table;
-
-struct singly_list_item* list_get_tail(struct singly_list_item* head)
-{
-    if(!head)
-    {
-        return NULL;
-    }
-
-    struct singly_list_item* current_item = head;
-    struct singly_list_item* last_item = NULL;
-    
-    while(current_item)
-    {
-        last_item = current_item;
-        current_item = current_item->next;
-    }
-    
-    return last_item;
-}
-
-struct singly_list_item* list_pop(struct singly_list_item** head)
-{
-    if(!(*head))
-    {
-        return NULL;
-    }
-
-    struct singly_list_item* current_head = *head;
-    const unsigned int current_count = (*head)->count;
-    *head = (*head)->next;
-    if(*head)
-    {
-        (*head)->count = current_count - 1;
-    }
-
-    current_head->next  = NULL;
-
-    SET_RED_PRINT();
-    printf("#Removed the head element\n");
-    SET_DEFAULT_PRINT();  
-
-    return current_head;
-}
-
-struct singly_list_item* list_remove_item_at_index(struct singly_list_item** head,const size_t index)
-{
-    if(!(*head) || index > (*head)->count) 
-    {           
-        SET_RED_PRINT();
-        printf("#Can't remove the item at index %llu \n",index);
-        SET_DEFAULT_PRINT(); return NULL;
-    }
-
-    if(index == 0) 
-    {
-        return list_pop(head);
-    }
-
-    struct singly_list_item* current_item = (*head)->next;
-    struct singly_list_item* previous_item = (*head);
-
-    for (int i = 1; i < (*head)->count; i++)
-    {
-        if(i == index)
-        {
-            previous_item->next = current_item->next;
-            (*head)->count--;
-            current_item->next=NULL;
-
-            SET_RED_PRINT();
-            printf("#Removed the element at index %d \n",i);
-            SET_DEFAULT_PRINT();
-            return current_item;
-        }
-
-        previous_item = current_item;
-        current_item = current_item->next;
-    } 
-
-    SET_RED_PRINT();
-    printf("#Index not founded\n");
-    SET_DEFAULT_PRINT();
-    return NULL;
-}
 
 size_t djb33x_hash(const char* key, const size_t keylen)
 {
@@ -242,28 +152,24 @@ int set_insert(set_table* set_table, const char* key)
     return 0;
 }
 
-void list_print(struct singly_list_item* head)
+void set_list_print(set_list_item* head)
 {
     if(!head)
     {
-        SET_RED_PRINT();
-        printf("#The list is empty!\n");
-        SET_DEFAULT_PRINT();
+        RED_PRINT("#The list is empty!");
         return;
     }
 
-    struct singly_list_item* current_item = head;
+    set_list_item* current_item = head;
 
-    SET_GREEN_PRINT();
-    printf("#The list length is = %d\n",head->count);
-    SET_DEFAULT_PRINT();
+    BLUE_PRINT("#The list length is = %d",head->list_item.count);
 
-    for (int i = 0; i < head->count; i++)
+    for (int i = 0; i < head->list_item.count; i++)
     {
-        printf("[%d] == %s \n",i, ((set_list_item*)current_item)->key);  
+        WHITE_PRINT("[%d] == %s",i,current_item->key);  
 
-        if(!current_item->next) continue;
-        current_item = current_item->next;
+        if(!current_item->list_item.next) continue;
+        current_item = (set_list_item*)(current_item->list_item.next);
     }
 }
 
@@ -305,11 +211,11 @@ set_list_item* set_remove(set_table* set_table, const char* key)
         return NULL;
     }
 
-    list_print((struct singly_list_item*)(set_table)->items[index]);
+    set_list_print((set_table)->items[index]);
 
     list_remove_item_at_index(((struct singly_list_item**)(&(set_table)->items[index])), founded_slot);
 
-    list_print((struct singly_list_item*)(set_table)->items[index]);
+    set_list_print((set_table)->items[index]);
 
     return to_remove_item;
 }
