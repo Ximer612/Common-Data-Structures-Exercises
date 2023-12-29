@@ -13,6 +13,9 @@
         "string.h": "c",
         "linked_lists.h": "c",
         "singly_linked.h": "c",
-        "stddef.h": "c"
+        "stddef.h": "c",
+        "dictionary.h": "c",
+        "set": "c",
+        "xtree": "c"
     }
 }

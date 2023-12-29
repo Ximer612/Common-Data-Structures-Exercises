@@ -8,7 +8,7 @@
 
 int main(int argc, char** argv)
 {
-    set_table* animals_set = create_new_set_table(2, 4);
+    set_table* animals_set = create_new_set_table(5, 4);
 
     set_insert(animals_set, "Cow");
     set_insert(animals_set, "Dog");
@@ -30,6 +30,7 @@ int main(int argc, char** argv)
     
     set_free(&animals_set);
     free(bee);
+    
     GREEN_PRINT("#Cleaning the address of [%s] => %p", bee->key, bee);
 
     return 0;

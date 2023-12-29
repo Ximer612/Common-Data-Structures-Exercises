@@ -4,6 +4,9 @@
 #define TO_GENERIC_SINGLY_LIST(x) (singly_list_item*)(x)
 #define TO_GENERIC_SINGLY_LIST_POINTER(x) (singly_list_item**)(x)
 
+#ifndef SINGLY_DEFINE
+#define SINGLY_DEFINE
+
 typedef struct singly_list_item
 {
     struct singly_list_item* next; 
@@ -15,6 +18,8 @@ typedef struct int_singly_list_item
     singly_list_item list_item; //it's like his parent
     int value;    
 }int_singly_list_item;
+
+#endif
 
 singly_list_item* list_get_tail(singly_list_item* head);
 singly_list_item* list_append(singly_list_item** head, singly_list_item* item);
