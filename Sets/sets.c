@@ -174,7 +174,7 @@ int int_set_insert(int_set_table* my_set_table, const char* key, const int value
     if(GET_INT_SET_ITEMS_COUNT(my_set_table,index) >= my_set_table->hashmap_singly_max_length)
     {
         RED_PRINT("CANNOT ADD [%s] MAX SLOTS ITEMS FOR THIS INDEX ALREADY REACHED!", key);
-        return -1;
+        return 2;
     }
 
     /*if(set_find(TO_GENERIC_SET(my_set_table) ,key, NULL))
@@ -201,7 +201,7 @@ int int_set_insert(int_set_table* my_set_table, const char* key, const int value
     my_set_table->items[index]->set_list_item.list_item.count++;
 
     GREEN_PRINT("ADDED [%s] IN THE %d SLOT AT THE INDEX %llu AFTER THE [%s]!",key, GET_INT_SET_ITEMS_COUNT(my_set_table,index) , index, ((int_set_list_item*)tail)->set_list_item.key);
-    return 2;
+    return 0;
 }
 
 void set_list_print(set_list_item* head)
