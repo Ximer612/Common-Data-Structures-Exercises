@@ -41,7 +41,7 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
     int return_value = int_set_insert(&dict->set,new_item_key,new_item_value);
     if( return_value != -1)
     {
-        if(return_value == 2)
+        if(return_value == 2) //2 = too much collisions
         {
             double_dictionary:
 
@@ -52,8 +52,6 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
             int_set_list_item* actual_item;
             char* key;
             int value;
-
-            int_dictionary_print(dict);
 
             for (size_t i = 0; i < dict->set.hashmap_size; i++)
             {
@@ -67,6 +65,7 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
                 int value = actual_item->value;
 
                 return_value = int_set_insert(tmp_set_table,key,value);
+                if(return_value == 2) goto double_dictionary;
 
                 if(!actual_item->set_list_item.list_item.next) continue;
 
@@ -88,7 +87,7 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
 
             free(tmp_set_table);
 
-            GREEN_PRINT("Dictionary size doubled successfully!");
+            MAGENTA_PRINT("Dictionary size doubled successfully!");
             
         }
         
