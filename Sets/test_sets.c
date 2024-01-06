@@ -10,14 +10,14 @@ int main(int argc, char** argv)
 {
     set_table* animals_set = create_new_set_table(5, 4);
 
-    set_insert(animals_set, "Cow");
-    set_insert(animals_set, "Dog");
-    set_insert(animals_set, "Cat");
-    set_insert(animals_set, "Ant");
-    set_insert(animals_set, "Bee");
-    set_insert(animals_set, "Bear");
-    set_insert(animals_set, "Pig");
-    set_insert(animals_set, "Cow");
+    set_insert(animals_set, "Cow",NULL);
+    set_insert(animals_set, "Dog",NULL);
+    set_insert(animals_set, "Cat",NULL);
+    set_insert(animals_set, "Ant",NULL);
+    set_insert(animals_set, "Bee",NULL);
+    set_insert(animals_set, "Bear",NULL);
+    set_insert(animals_set, "Pig",NULL);
+    set_insert(animals_set, "Cow",NULL);
 
     set_print(animals_set);
     
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 
     set_print(animals_set);
     
-    set_free(&animals_set);
+    set_free(animals_set);
     free(bee);
     
     GREEN_PRINT("#Cleaning the address of [%s] => %p", bee->key, bee);

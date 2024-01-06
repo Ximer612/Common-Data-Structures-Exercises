@@ -72,14 +72,18 @@ set_list_item* set_find(set_table* set_table, const char* key, size_t* founded_s
     return NULL;
 }
 
-int set_insert(set_table* my_set_table, const char* key)
+set_list_item* set_insert(set_table* my_set_table, const char* key, int* has_reached_max)
 {
     const size_t key_len = strlen(key);
     const size_t hash = djb33x_hash(key, key_len);
     const size_t index = hash % my_set_table->hashmap_size;
 
     //printf("hash of %s = %llu (index: %llu)\n", key, hash, index);
-
+    if(has_reached_max)
+    {
+        *has_reached_max = 0;
+    }
+    
     set_list_item* head = my_set_table->items[index];
 
     singly_list_item* tail = list_get_tail(&head->list_item);
@@ -92,7 +96,7 @@ int set_insert(set_table* my_set_table, const char* key)
         if (!my_set_table->items[index])
         {
             RED_PRINT("Cannot allocate enough memory!");
-            return -1;
+            return NULL;
         }
 
         my_set_table->items[index]->key = key;
@@ -101,19 +105,21 @@ int set_insert(set_table* my_set_table, const char* key)
         my_set_table->items[index]->list_item.count = 1;
 
         GREEN_PRINT("[%s] ADDED ELEMENT AT THE INDEX %llu!",key, index);
-        return 0;
+        return my_set_table->items[index];
     }
 
     if(GET_SET_ITEMS_COUNT(my_set_table,index) >= my_set_table->hashmap_singly_max_length)
     {
         RED_PRINT("CANNOT ADD [%s] MAX SLOTS ITEMS FOR THIS INDEX ALREADY REACHED!", key);
-        return -1;
+        if(has_reached_max)
+            *has_reached_max = 1;
+        return NULL;
     }
 
     if(set_find(my_set_table,key, NULL))
     {
         RED_PRINT("THE ELEMENT [%s] WAS ALREADY IN THE SET AND WAS NOT ADDED AGAIN!",key);
-        return -1; 
+        return NULL; 
     }
     
     // if has a tail
@@ -122,86 +128,33 @@ int set_insert(set_table* my_set_table, const char* key)
     if (!new_item)
     {
         RED_PRINT("Cannot allocate enough memory!");
-        return -1;
+        return NULL;
     }
 
     new_item->key = key;
     new_item->key_len = key_len;
     new_item->list_item.next = NULL;
 
-    tail->next = &(new_item->list_item);
-    my_set_table->items[index]->list_item.count++;
+    list_append((singly_list_item **)&head,(singly_list_item *)new_item);
 
     GREEN_PRINT("ADDED [%s] IN THE %d SLOT AT THE INDEX %llu AFTER THE [%s]!",key, GET_SET_ITEMS_COUNT(my_set_table,index) , index, ((set_list_item*)tail)->key);
-    return 0;
+
+    return new_item;
 }
 
-int int_set_insert(int_set_table* my_set_table, const char* key, const int value)
+
+set_list_item* int_set_insert(int_set_table* my_set_table, const char* key, const int value,int* has_reached_max)
 {
-    const size_t key_len = strlen(key);
-    const size_t hash = djb33x_hash(key, key_len);
-    const size_t index = hash % my_set_table->hashmap_size;
+    set_list_item* item_added = set_insert((set_table*)my_set_table,key,has_reached_max);
 
-    //printf("hash of %s = %llu (index: %llu)\n", key, hash, index);
-
-    int_set_list_item* head = my_set_table->items[index];
-
-    singly_list_item* tail = list_get_tail(&head->set_list_item.list_item);
-
-    //if no tail = no head
-    if(!tail) {
-
-        my_set_table->items[index] = malloc(sizeof(int_set_list_item));
-
-        if (!my_set_table->items[index])
-        {
-            RED_PRINT("Cannot allocate enough memory!");
-            return -1;
-        }
-
-        my_set_table->items[index]->set_list_item.key = key;
-        my_set_table->items[index]->set_list_item.key_len = key_len;
-        my_set_table->items[index]->set_list_item.list_item.next = NULL;
-        my_set_table->items[index]->set_list_item.list_item.count = 1;
-        my_set_table->items[index]->value = value;
-
+    if(item_added)
+    {
+        ((int_set_list_item*)item_added)->value = value;
         
-
-        GREEN_PRINT("[%s] ADDED ELEMENT AT THE INDEX %llu!",key, index);
-        return 0;
+        return item_added;
     }
-
-    if(GET_INT_SET_ITEMS_COUNT(my_set_table,index) >= my_set_table->hashmap_singly_max_length)
-    {
-        RED_PRINT("CANNOT ADD [%s] MAX SLOTS ITEMS FOR THIS INDEX ALREADY REACHED!", key);
-        return 2;
-    }
-
-    /*if(set_find(TO_GENERIC_SET(my_set_table) ,key, NULL))
-    {
-        RED_PRINT("THE ELEMENT [%s] WAS ALREADY IN THE SET AND WAS NOT ADDED AGAIN!",key);
-        return -1; 
-    }*/
     
-    // if has a tail
-    int_set_list_item* new_item = malloc(sizeof(int_set_list_item));
-
-    if (!new_item)
-    {
-        RED_PRINT("Cannot allocate enough memory!");
-        return -1;
-    }
-
-    new_item->set_list_item.key = key;
-    new_item->set_list_item.key_len = key_len;
-    new_item->set_list_item.list_item.next = NULL;
-    new_item->value = value;
-
-    tail->next = &(new_item->set_list_item.list_item);
-    my_set_table->items[index]->set_list_item.list_item.count++;
-
-    GREEN_PRINT("ADDED [%s] IN THE %d SLOT AT THE INDEX %llu AFTER THE [%s]!",key, GET_INT_SET_ITEMS_COUNT(my_set_table,index) , index, ((int_set_list_item*)tail)->set_list_item.key);
-    return 0;
+    return NULL;
 }
 
 void set_list_print(set_list_item* head)
@@ -286,26 +239,26 @@ set_list_item* set_remove(set_table* set_table, const char* key)
         return NULL;
     }
 
-    set_list_print((set_table)->items[index]);
+    //set_list_print((set_table)->items[index]);
 
     list_remove_item_at_index(((struct singly_list_item**)(&(set_table)->items[index])), founded_slot);
 
-    set_list_print((set_table)->items[index]);
+    //set_list_print((set_table)->items[index]);
 
     return to_remove_item;
 }
 
-void set_free(set_table** set_table)
+void set_free(set_table* set_table)
 {
     set_list_item* free_node;
 
-    for (int i = 0; i < (*set_table)->hashmap_size; i++)
+    for (int i = 0; i < set_table->hashmap_size; i++)
     {
-        free_node = (*set_table)->items[i];
+        free_node = set_table->items[i];
 
         if(!free_node) continue;
 
-        for (int j = 0; j < (*set_table)->hashmap_singly_max_length; j++)
+        for (int j = 0; j < set_table->hashmap_singly_max_length; j++)
         {
             GREEN_PRINT("#Cleaning the address of [%s] => %p",free_node->key,free_node);
 
@@ -320,4 +273,6 @@ void set_free(set_table** set_table)
             else break;
         }        
     }
+
+    free(set_table);
 }

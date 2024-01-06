@@ -7,6 +7,8 @@
 #include <console_utilities.h>
 #include <doubly_linked.h>
 
+#define ITEMS_TO_CREATE 10 // using const int items_to_create = 10; gives a fake error
+
 int main(int argc, char** argv)
 {
     srand(time(NULL));
@@ -14,10 +16,9 @@ int main(int argc, char** argv)
     doubly_list_item* head;
     int_doubly_list_item* items_to_add;
 
-    void** to_free_memory[10];
-    const int items_to_create = 10;
+    void** to_free_memory[ITEMS_TO_CREATE];
 
-    for (int i = 0; i < items_to_create; i++)
+    for (int i = 0; i < ITEMS_TO_CREATE; i++)
     {
         items_to_add = TO_INT_LIST(malloc(sizeof(int_doubly_list_item)));
         to_free_memory[i] = (void*)items_to_add;
@@ -51,13 +52,14 @@ int main(int argc, char** argv)
 
     SET_GREEN_PRINT();
 
-    for (int i = 0; i < items_to_create; i++)
+    for (int i = 0; i < ITEMS_TO_CREATE; i++)
     {
         printf("#Cleaning the address => %p\n",to_free_memory[i]);
         free(to_free_memory[i]);
     }
 
-    printf("#Memory clean!\n");
+    printf("#Memory cleaned!\n");
     SET_DEFAULT_PRINT();
+    
     return 0;
 }

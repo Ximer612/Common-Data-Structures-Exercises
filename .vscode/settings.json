@@ -16,6 +16,7 @@
         "stddef.h": "c",
         "dictionary.h": "c",
         "set": "c",
-        "xtree": "c"
-    }
+        "xtree": "c",
+        "sets.h": "c"
+    },
 }

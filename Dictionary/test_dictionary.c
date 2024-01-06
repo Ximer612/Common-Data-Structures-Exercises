@@ -18,5 +18,7 @@ int main(int argc, char** argv)
     int_dictionary_insert(my_dict, "EARTH", 30);
     
     int_dictionary_print(my_dict);
+
+    free_int_dictionary(my_dict);
     return 0;
 }

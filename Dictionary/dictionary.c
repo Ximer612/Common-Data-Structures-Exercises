@@ -38,20 +38,25 @@ int_dictionary* create_new_int_dictionary(const size_t hashmap_size, const size_
 
 int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const int new_item_value)
 {
-    int return_value = int_set_insert(&dict->set,new_item_key,new_item_value);
-    if( return_value != -1)
+    int has_reached_max;
+    set_list_item* added_item = int_set_insert(&dict->set,new_item_key,new_item_value,&has_reached_max);
+    
+    if(!added_item)
     {
-        if(return_value == 2) //2 = too much collisions
+        if(has_reached_max == 1) //1 = too much collisions
         {
+
+            CYAN_PRINT("Starting doubling of the dictionary!");
+
+            int_set_list_item* actual_item;
+            char* key;
+            int value;
+
             double_dictionary:
 
             int_set_table* tmp_set_table = (int_set_table*) create_new_set_table(dict->set.hashmap_size*2,dict->set.hashmap_singly_max_length);
 
             if(!tmp_set_table) return -1;
-
-            int_set_list_item* actual_item;
-            char* key;
-            int value;
 
             for (size_t i = 0; i < dict->set.hashmap_size; i++)
             {
@@ -64,8 +69,8 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
                 char* key = (char*)actual_item->set_list_item.key;
                 int value = actual_item->value;
 
-                return_value = int_set_insert(tmp_set_table,key,value);
-                if(return_value == 2) goto double_dictionary;
+                int_set_insert(tmp_set_table,key,value,&has_reached_max);
+                if(has_reached_max == 1) goto double_dictionary;
 
                 if(!actual_item->set_list_item.list_item.next) continue;
 
@@ -76,11 +81,11 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
             }            
 
             //try again to add this item
-            return_value = int_set_insert(tmp_set_table,new_item_key,new_item_value);
+            int_set_insert(tmp_set_table,new_item_key,new_item_value,&has_reached_max);
 
             dict->set = *((int_set_table*)tmp_set_table);
 
-            if(return_value == 2)
+            if(has_reached_max == 1)
             {
                 goto double_dictionary;
             } 
@@ -88,18 +93,24 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
             free(tmp_set_table);
 
             MAGENTA_PRINT("Dictionary size doubled successfully!");
-            
+
+            return 0;            
         }
         
-        return 0;
+        return -1;
 
     }
 
-    return -1;
+    return 0;
 }
 
 void int_dictionary_print(int_dictionary* dict)
 {
     BLUE_PRINT("Dictionary length = %llu, Singly max length = %llu",dict->set.hashmap_size, dict->set.hashmap_singly_max_length);
     int_set_print(&dict->set);  
+}
+
+void free_int_dictionary(int_dictionary* dict)
+{
+    set_free((set_table*)&dict->set);
 }

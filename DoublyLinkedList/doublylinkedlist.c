@@ -251,7 +251,7 @@ void doubly_list_print(doubly_list_item* head)
 
     for (int i = 0; i < head->count; i++)
     {
-        WHITE_PRINT("[%d] == %d",i,(TO_INT_LIST(current_item))->value);  
+        WHITE_PRINT("%p ==== [%d] == %d",current_item,i,(TO_INT_LIST(current_item))->value);  
 
         if(!current_item->next) continue;
         current_item = current_item->next;
