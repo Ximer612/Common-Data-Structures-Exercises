@@ -7,32 +7,28 @@
 #ifndef SET_DEFINE
 #define SET_DEFINE
 
-typedef struct 
+typedef struct set_list_item
 {
     singly_list_item list_item;
     const char *key;
     size_t key_len;
 }set_list_item;  
 
-typedef struct
-{
-    set_list_item set_list_item;
-    int value;
-}int_set_list_item;
-
-typedef struct
+typedef struct set_table
 {
     set_list_item **items; //array of pointers of items
     size_t hashmap_size;
     size_t hashmap_singly_max_length;
 } set_table;
 
-typedef struct
+typedef struct int_set_list_item
 {
-    int_set_list_item **items; //array of pointers of items
-    size_t hashmap_size;
-    size_t hashmap_singly_max_length;
-} int_set_table;
+    set_list_item set_list_item;
+    int value;
+}int_set_list_item;
+
+
+
 
 #endif
 
@@ -44,5 +40,7 @@ void set_list_print(set_list_item* head);
 void set_print(const set_table* set_table);
 set_list_item* set_remove(set_table* set_table, const char* key);
 void set_free(set_table* set_table);
-void int_set_print(const int_set_table* set_table);
-set_list_item* int_set_insert(int_set_table* my_set_table, const char* key, const int value,int* has_reached_max);
+
+void int_set_print(const set_table* set_table);
+set_list_item* int_set_insert(set_table* my_set_table, const char* key, const int value,int* has_reached_max);
+

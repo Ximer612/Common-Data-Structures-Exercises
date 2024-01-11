@@ -29,7 +29,7 @@ int_dictionary* create_new_int_dictionary(const size_t hashmap_size, const size_
         return NULL;
     }
 
-    dict->set = *((int_set_table*)tmp_set_table);
+    dict->set = *(tmp_set_table);
     free(tmp_set_table);
     //dict->max_collisions = max_collisions;
 
@@ -54,13 +54,13 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
 
             double_dictionary:
 
-            int_set_table* tmp_set_table = (int_set_table*) create_new_set_table(dict->set.hashmap_size*2,dict->set.hashmap_singly_max_length);
+            set_table* tmp_set_table = create_new_set_table(dict->set.hashmap_size*2,dict->set.hashmap_singly_max_length);
 
             if(!tmp_set_table) return -1;
 
             for (size_t i = 0; i < dict->set.hashmap_size; i++)
             {
-                actual_item = dict->set.items[i];
+                actual_item = (int_set_list_item*)dict->set.items[i];
 
                 if(!actual_item) continue;
 
@@ -83,7 +83,7 @@ int int_dictionary_insert(int_dictionary* dict, const char* new_item_key, const 
             //try again to add this item
             int_set_insert(tmp_set_table,new_item_key,new_item_value,&has_reached_max);
 
-            dict->set = *((int_set_table*)tmp_set_table);
+            dict->set = *(tmp_set_table);
 
             if(has_reached_max == 1)
             {
