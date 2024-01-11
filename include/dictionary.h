@@ -1,13 +1,13 @@
 #include <sets.h>
 #include <stdlib.h>
 
-
-typedef struct int_dictionary
+typedef struct dictionary
 {
     set_table set;
-}int_dictionary;
+}dictionary;
 
-int_dictionary* create_new_int_dictionary(const size_t hashmap_size, const size_t hashmap_singly_max_length);
-int int_dictionary_insert(int_dictionary* dict, const char* key, const int value);
-void int_dictionary_print(int_dictionary* dict);
-void free_int_dictionary(int_dictionary* dict);
+
+dictionary* create_new_dictionary(const size_t hashmap_size, const size_t hashmap_singly_max_length, const enum VALUE_TYPE value_type);
+int dictionary_insert(dictionary* dict, const char* new_item_key, const void* new_item_value);
+void dictionary_print(dictionary* dict);
+void free_dictionary(dictionary* dict);

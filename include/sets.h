@@ -7,6 +7,13 @@
 #ifndef SET_DEFINE
 #define SET_DEFINE
 
+enum VALUE_TYPE
+{
+    INT_TYPE,
+    BOOL_TYPE,
+    STRING_TYPE,
+};
+
 typedef struct set_list_item
 {
     singly_list_item list_item;
@@ -19,21 +26,20 @@ typedef struct set_table
     set_list_item **items; //array of pointers of items
     size_t hashmap_size;
     size_t hashmap_singly_max_length;
-} set_table;
+    enum VALUE_TYPE value_type;
+}set_table;
 
-typedef struct int_set_list_item
+typedef struct generic_set_list_item
 {
     set_list_item set_list_item;
-    int value;
-}int_set_list_item;
-
-
+    void* value;
+}generic_set_list_item;
 
 
 #endif
 
 size_t djb33x_hash(const char* key, const size_t keylen);
-set_table* create_new_set_table(const size_t hashmap_size, const size_t hashmap_singly_max_length);
+set_table *create_new_set_table(const size_t hashmap_size, const size_t hashmap_singly_max_length, const enum VALUE_TYPE value_type);
 set_list_item* set_find(set_table* set_table, const char* key, size_t* founded_slot);
 set_list_item* set_insert(set_table* my_set_table, const char* key, int* has_reached_max);
 void set_list_print(set_list_item* head);
@@ -41,6 +47,5 @@ void set_print(const set_table* set_table);
 set_list_item* set_remove(set_table* set_table, const char* key);
 void set_free(set_table* set_table);
 
-void int_set_print(const set_table* set_table);
-set_list_item* int_set_insert(set_table* my_set_table, const char* key, const int value,int* has_reached_max);
-
+void generic_set_print(const set_table* set_table);
+set_list_item *generic_set_insert(set_table *my_set_table, const char *key, void* value, int *has_reached_max);

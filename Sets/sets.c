@@ -18,7 +18,7 @@ size_t djb33x_hash(const char *key, const size_t keylen)
     return hash;
 }
 
-set_table *create_new_set_table(const size_t hashmap_size, const size_t hashmap_singly_max_length)
+set_table *create_new_set_table(const size_t hashmap_size, const size_t hashmap_singly_max_length, const enum VALUE_TYPE value_type)
 {
     set_table *table = malloc(sizeof(set_table));
     if (!table)
@@ -30,6 +30,7 @@ set_table *create_new_set_table(const size_t hashmap_size, const size_t hashmap_
     table->hashmap_size = hashmap_size;
     table->hashmap_singly_max_length = hashmap_singly_max_length;
     table->items = calloc(table->hashmap_size, sizeof(set_list_item **)); // calloc because there can be everything in this nodes
+    table->value_type = value_type;
 
     if (!table->items)
     {
@@ -144,13 +145,16 @@ set_list_item *set_insert(set_table *my_set_table, const char *key, int *has_rea
     return new_item;
 }
 
-set_list_item *int_set_insert(set_table *my_set_table, const char *key, const int value, int *has_reached_max)
+set_list_item *generic_set_insert(set_table *my_set_table, const char *key, void* value, int *has_reached_max)
 {
     set_list_item *item_added = set_insert((set_table *)my_set_table, key, has_reached_max);
 
     if (item_added)
     {
-        ((int_set_list_item *)item_added)->value = value;
+        if(my_set_table->value_type == BOOL_TYPE) value = (int)value > 0 ? "true" : "false";
+
+        ((generic_set_list_item*)item_added)->value = (void*)value;
+
 
         return item_added;
     }
@@ -205,24 +209,38 @@ void set_print(const set_table* set_table)
     }
 }
 
-void int_set_print(const set_table* set_table)
+void generic_set_print(const set_table* set_table)
 {
-    int_set_list_item* print_node;
+    generic_set_list_item* print_node;
 
     for (int i = 0; i < set_table->hashmap_size; i++)
     {
-        print_node = (int_set_list_item*)set_table->items[i];
+        print_node = (generic_set_list_item*)set_table->items[i];
 
         if (!print_node)
             continue;
 
         for (int j = 0; j < set_table->hashmap_singly_max_length; j++)
         {
-            WHITE_PRINT("KEY = [%s], VALUE = %d", print_node->set_list_item.key, print_node->value);
+            switch (set_table->value_type)
+            {
+            case INT_TYPE:
+                WHITE_PRINT("KEY = [%s], VALUE = %d", print_node->set_list_item.key, (int*)print_node->value);
+                break;
+            case BOOL_TYPE:
+                WHITE_PRINT("KEY = [%s], VALUE = %s", print_node->set_list_item.key, (char*)print_node->value);
+                break;
+            case STRING_TYPE:
+                WHITE_PRINT("KEY = [%s], VALUE = %s", print_node->set_list_item.key, (char*)print_node->value);
+                break;
+            default:
+                RED_PRINT("NOT SUPPORTED PRINT WITH THIS VALUE TYPE!");
+                break;
+            }
 
             if (print_node->set_list_item.list_item.next)
             {
-                print_node = (int_set_list_item*)print_node->set_list_item.list_item.next;
+                print_node = (generic_set_list_item*)print_node->set_list_item.list_item.next;
             }
             else
                 break;

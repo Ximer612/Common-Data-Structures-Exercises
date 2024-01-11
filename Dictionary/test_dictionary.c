@@ -6,19 +6,19 @@
 
 int main(int argc, char** argv)
 {
-    int_dictionary* my_dict;
+    dictionary* my_dict;
 
-    my_dict = create_new_int_dictionary(1,2);
+    my_dict = create_new_dictionary(1,2,INT_TYPE);
 
-    int_dictionary_insert(my_dict, "CIAO", 10);
-    int_dictionary_insert(my_dict, "HELLO", 20);
-    int_dictionary_insert(my_dict, "WORLD", 30);
-    int_dictionary_insert(my_dict, "TEST", 40);
-    int_dictionary_insert(my_dict, "FIFTY", 50);
-    int_dictionary_insert(my_dict, "EARTH", 30);
+    dictionary_insert(my_dict, "CIAO",  (void*)10);
+    dictionary_insert(my_dict, "HELLO", (void*)20);
+    dictionary_insert(my_dict, "WORLD", (void*)30);
+    dictionary_insert(my_dict, "TEST",  (void*)40);
+    dictionary_insert(my_dict, "FIFTY", (void*)50);
+    dictionary_insert(my_dict, "EARTH", (void*)30);
     
-    int_dictionary_print(my_dict);
+    dictionary_print(my_dict);
 
-    free_int_dictionary(my_dict);
+    free_dictionary(my_dict);
     return 0;
 }
