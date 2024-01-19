@@ -1,0 +1,1 @@
+clang.exe -o .\bin\dictionary_test.exe .\src\Dictionary\dictionary.c  .\src\Sets\sets.c .\src\SinglyLinkedList\linkedlist.c .\src\Dictionary\test_dictionary.c -I .\include\

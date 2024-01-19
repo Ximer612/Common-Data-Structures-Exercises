@@ -1,3 +1,6 @@
+#ifndef DICTIONARY_DEFINITION
+#define DICTIONARY_DEFINITION
+
 #include <sets.h>
 #include <stdlib.h>
 
@@ -11,3 +14,5 @@ dictionary* create_new_dictionary(const size_t hashmap_size, const size_t hashma
 int dictionary_insert(dictionary* dict, const char* new_item_key, const void* new_item_value);
 void dictionary_print(dictionary* dict);
 void free_dictionary(dictionary* dict);
+
+#endif

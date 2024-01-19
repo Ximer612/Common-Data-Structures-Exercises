@@ -1,0 +1,4 @@
+call singly_linked_list_build.bat
+call doubly_linked_list_build.bat
+call set_build.bat
+call dictionary_build.bat

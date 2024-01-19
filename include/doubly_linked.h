@@ -1,3 +1,6 @@
+#ifndef DOUBLY_LIST_DEFINE
+#define DOUBLY_LIST_DEFINE
+
 #define GET_MY_LIST(x) &(x.list_item)
 #define TO_INT_LIST(x) (int_doubly_list_item*)(x)
 #define TO_INT_LIST_POINTER(x) (int_doubly_list_item**)(x)
@@ -27,3 +30,5 @@ void list_add_element_before_index(doubly_list_item** head, doubly_list_item* it
 unsigned int find_index_by_int_value(const doubly_list_item* head, const unsigned int value);
 void doubly_list_print(doubly_list_item* head);
 doubly_list_item* shuffle_list(doubly_list_item* head);
+
+#endif

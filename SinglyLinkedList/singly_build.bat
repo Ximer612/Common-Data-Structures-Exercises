@@ -1,1 +1,0 @@
-clang.exe -o .\SinglyLinkedList\linkedlist.exe .\SinglyLinkedList\test_singly.c .\SinglyLinkedList\linkedlist.c  -I .\include\

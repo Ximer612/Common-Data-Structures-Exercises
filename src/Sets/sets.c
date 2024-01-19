@@ -225,7 +225,7 @@ void generic_set_print(const set_table* set_table)
             switch (set_table->value_type)
             {
             case INT_TYPE:
-                WHITE_PRINT("KEY = [%s], VALUE = %d", print_node->set_list_item.key, (int*)print_node->value);
+                WHITE_PRINT("KEY = [%s], VALUE = %d", print_node->set_list_item.key, (int)print_node->value);
                 break;
             case BOOL_TYPE:
                 WHITE_PRINT("KEY = [%s], VALUE = %s", print_node->set_list_item.key, (char*)print_node->value);

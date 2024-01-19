@@ -1,0 +1,1 @@
+clang.exe -o .\bin\set_test.exe .\src\Sets\sets.c .\src\SinglyLinkedList\linkedlist.c .\src\Sets\test_sets.c -I .\include\
